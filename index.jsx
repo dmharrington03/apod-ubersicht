@@ -3,9 +3,19 @@ import { css } from "uebersicht"
 const API_KEY = "";
 
 const image = css`
+display: block;
 float: left;
 max-width: 1050px;
+width: 100%;
+height: auto;
+padding: 10px 0px;
 `;
+
+const pics = css`
+display: flex;
+flex-direction: column;
+`
+
 const aside = css`
 z-index: 1;
 display: flex;
@@ -38,7 +48,7 @@ const box = css`
 display: flex;
 align-items: center;
 color: white;
-font-family: "Adobe Garamond Pro";
+font-family: "Garamond";
 text-align: justify;
 width: 1678px; 
 height: 1020px;
@@ -57,19 +67,37 @@ export const command = () => {
 
 export const render = ({output, error}) => {
 
-    return error ? (
-        <div>Something went wrong: <strong>{String(error)}</strong></div>
-        ) : (
-        <div className={box}>
-            <img className={image} src={output.hdurl}></img>
-            <aside className={aside}>
-                <h1 className={h1}>{output.title}</h1>
-                <h2 className={h2}>{output.date}</h2>
-                <p className={text}>&nbsp;&nbsp;&nbsp;&nbsp;
-                {output.explanation}
-                </p>
-            </aside>
-        </div>
-    );
+    if (output) {
+        let media;
+        if (output.media_type == "video")
+        {
+            let req_url = output.url + "&controls=0&loop=1&autoplay=1&mute=1&disablekb=1";
+            media = <iframe width="1050" height="1200" frameborder="0" src={req_url}></iframe>;
+                    
+        } else {
+            media = <img className={image} src={output.hdurl}></img>;
+        }
+
+        return error ? (
+            <div>Something went wrong: <strong>{String(error)}</strong></div>
+            ) : (
+            <div className={box}>
+                <div className={pics}>
+                    <div>
+                        {media}
+                    </div>
+                </div>
+                <aside className={aside}>
+                    <h1 className={h1}>{output.title}</h1>
+                    <h2 className={h2}>{output.date}</h2>
+                    <p className={text}>&nbsp;&nbsp;&nbsp;&nbsp;
+                    {output.explanation}
+                    </p>
+                </aside>
+            </div>
+        );
+    } else {
+        return (<p className={text}>No connection</p>);
+    }
 }
 
